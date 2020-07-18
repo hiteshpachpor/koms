@@ -19,6 +19,6 @@ class RecipeIngredient extends Model
     public function ingredient()
     {
         // recipe_ingredient maps to one ingredient, and ingredient.id = recipe_ingredient.ingredient_id
-        return $this->hasOne('App\Ingredient', 'id', 'recipe_id');
+        return $this->hasOne('App\Ingredient', 'id', 'ingredient_id');
     }
 }

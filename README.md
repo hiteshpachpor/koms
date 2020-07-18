@@ -1,85 +1,168 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+# Kitchen Order Management System
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+This project is intended to be used as a backend for kitchens to manage their inventory and orders.
 
-## About Laravel
+## About
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1. This project uses Laravel. Read the official [Laravel installation guide](https://laravel.com/docs/7.x/installation) to learn more about the setup instructions.
+2. [MySQL](https://www.mysql.com/) is required as a datastore.
+3. APIs are exposed to interact with inventory and order data.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. Clone this repository:
 
-## Learning Laravel
+```bash
+git clone https://github.com/hiteshpachpor/koms.git
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+2. Install all package dependencies:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+composer install
+```
 
-## Laravel Sponsors
+3. This project uses Node.js version `10.9.0`. To switch to it (& install it):
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+nvm use
+```
 
-### Premium Partners
+4. Set up prettier for code formatting & husky for commit lint:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
+```bash
+npm i
+```
 
-### Community Sponsors
+5. This project requires a MySQL database (5.7 or above). Set it up using:
 
-<a href="https://op.gg"><img src="http://opgg-static.akamaized.net/icon/t.rectangle.png" width="150"></a>
+```bash
 
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [云软科技](http://www.yunruan.ltd/)
+```
 
-## Contributing
+6. Copy `.env.example` to `.env`, modify the below database config:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```yml
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Code of Conduct
+7. Run all database migrations & seed the database with sample data:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
 
-## Security Vulnerabilities
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Running
 
-## License
+### Locally
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan serve
+```
+
+### On Docker
+
+## Documentation
+
+## APIs
+
+### 1. Create an ingredient
+
+### 2. List ingredients
+
+### 3. Create a recipe
+
+### 4. List recipes
+
+### 5. Create a box for a user
+
+### 6. View the ingredients required to be ordered by the company
+
+## Database Structure
+
+### ingredient
+
+-   id
+-   name
+-   description
+-   in_stock
+-   stock_qty
+-   measure
+-   supplier_id
+-   created_at
+-   updated_at
+
+### supplier
+
+-   id
+-   name
+-   created_at
+-   updated_at
+
+### recipe
+
+-   id
+-   name
+-   description
+-   created_at
+-   updated_at
+
+### recipe_ingredient
+
+-   id
+-   recipe_id
+-   ingredient_id
+-   amount
+-   created_at
+-   updated_at
+
+### box_order
+
+-   id
+-   user_id
+-   user_address_id
+-   delivery_date
+-   delivery_slot
+-   delivery_notes
+-   created_at
+-   updated_at
+
+### box_order_recipe
+
+-   id
+-   box_order_id
+-   recipe_id
+-   created_at
+-   updated_at
+
+### users
+
+-   id
+-   name
+-   phone
+-   email
+-   email_verified_at
+-   password
+-   remember_token
+-   created_at
+-   updated_at
+
+### user_address
+
+-   id
+-   user_id
+-   name
+-   phone
+-   flat
+-   building
+-   street
+-   city
+-   state
+-   country
+-   zipcode
+-   created_at
+-   updated_at

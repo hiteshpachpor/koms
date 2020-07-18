@@ -14,6 +14,19 @@ class BoxOrder extends Model
     protected $table = 'box_order';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'user_id',
+        'user_address_id',
+        'delivery_date',
+        'delivery_slot',
+        'delivery_notes',
+    ];
+
+    /**
      * Get the user who ordered this box.
      */
     public function user()
@@ -32,7 +45,7 @@ class BoxOrder extends Model
     /**
      * Get the boxes associated with this order.
      */
-    public function phone()
+    public function recipes()
     {
         return $this->hasMany('App\BoxOrderRecipe', 'box_order_id', 'id');
     }

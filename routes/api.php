@@ -22,3 +22,6 @@ Route::apiResources([
     'ingredients' => 'API\IngredientController',
     'recipes' => 'API\RecipeController',
 ]);
+
+Route::post('box/create', 'API\BoxOrderController@create');
+Route::get('box/{id}', 'API\BoxOrderController@show');

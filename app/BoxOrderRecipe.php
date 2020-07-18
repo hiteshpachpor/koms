@@ -14,6 +14,13 @@ class BoxOrderRecipe extends Model
     protected $table = 'box_order_recipe';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['box_order_id', 'recipe_id'];
+
+    /**
      * Get the recipe associated with the box.
      */
     public function recipe()

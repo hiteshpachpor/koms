@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Config;
 use App\UserAddress;
+use App\Recipe;
 
 class BoxSeeder extends Seeder
 {
@@ -53,12 +54,27 @@ class BoxSeeder extends Seeder
 
             // Seed recipes for this box
             foreach ($recipeIds as $recipeId) {
-                DB::table('box_order_recipe')->insert([
-                    'box_order_id' => $boxId,
-                    'recipe_id' => $recipeId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                $recipe = Recipe::with('ingredientList.ingredient')->find(
+                    $recipeId
+                );
+                $ingredients = $recipe->ingredientList;
+
+                foreach ($ingredients as $ingredient) {
+                    $record = [
+                        'box_order_id' => $boxId,
+                        'recipe_id' => $recipeId,
+                        'recipe_name' => $recipe->name,
+                        'ingredient_id' => $ingredient->ingredient->id,
+                        'ingredient_name' => $ingredient->ingredient->name,
+                        'ingredient_measure' =>
+                            $ingredient->ingredient->measure,
+                        'ingredient_amount' => $ingredient->amount,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+
+                    DB::table('box_order_recipe')->insert($record);
+                }
             }
         }
     }

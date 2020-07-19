@@ -10,7 +10,93 @@ This project is intended to be used as a backend for kitchens to manage their in
 2. [MySQL](https://www.mysql.com/) is required as a datastore.
 3. APIs are exposed to interact with inventory and order data.
 
-## Installation
+## Run it on Docker
+
+### System requirements:
+
+1. Docker
+
+### Steps:
+
+1. Clone this repository:
+
+```bash
+$ git clone https://github.com/hiteshpachpor/koms.git
+```
+
+2. Copy the contents of `.env.example` to `.env`, and then modify the below database config:
+
+```yml
+DB_CONNECTION=mysql
+DB_HOST=koms-db
+DB_PORT=3306
+DB_DATABASE=koms
+DB_USERNAME=komsuser
+DB_PASSWORD=password
+```
+
+3. Start all the containers:
+
+```bash
+$ docker-compose up -d
+```
+
+**This will start 3 containers:**
+
+-   `koms-webserver`: Nginx web server which listens to port 8080 for incoming traffic.
+-   `koms-app`: Laravel app under php-fpm.
+-   `koms-db`: MySQL database.
+
+4. Generate an api key:
+
+```bash
+$ docker-compose exec -it koms-app php artisan key:generate
+```
+
+5. Cache settings:
+
+```bash
+$ docker-compose exec -it koms-app php artisan config:cache
+```
+
+> After this, you will be able to access the Laravel app on [http://localhost:8080/](http://localhost:8080/)
+>
+> However, for the APIs to be functional, we need to first set up a MySQL user.
+
+6. Create a new MySQL user for the Laravel app:
+
+```bash
+$ docker-compose exec -it koms-db bash
+root@<container>:/# mysql -u root -p
+mysql> GRANT ALL ON koms.* TO 'komsuser'@'%' IDENTIFIED BY 'password';
+mysql> FLUSH PRIVILEGES;
+```
+
+> Once this is set up, the app is ready to interact with the database.
+
+7. Run all database migrations & seed the database with sample data:
+
+```bash
+$ docker-compose exec -it koms-app php artisan migrate:fresh --seed
+```
+
+If you only want to run database migrations:
+
+```bash
+$ docker-compose exec -it koms-app php artisan migrate
+```
+
+## Run it manually
+
+### System requirements:
+
+1.  PHP >= 7.2
+2.  Composer
+3.  MySQL (optional)
+4.  Apache2/Nginx (optional)
+5.  Node.js (10.9.0 or above)
+
+### Steps:
 
 1. Clone this repository:
 
@@ -46,27 +132,29 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-6. Run all database migrations & seed the database with sample data:
-
-```bash
-$ php artisan migrate:fresh --seed
-```
-
-7. Generate the api key:
+6. Generate the api key:
 
 ```bash
 $ php artisan key:generate
 ```
 
-## Running
+7. Run all database migrations & seed the database with sample data:
 
-### Locally
+```bash
+$ php artisan migrate:fresh --seed
+```
+
+If you only want to run database migrations:
+
+```bash
+$ php artisan migrate
+```
+
+8. Run it locally:
 
 ```bash
 $ php artisan serve
 ```
-
-### On Docker
 
 ## Testing
 

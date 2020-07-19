@@ -15,25 +15,25 @@ This project is intended to be used as a backend for kitchens to manage their in
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/hiteshpachpor/koms.git
+$ git clone https://github.com/hiteshpachpor/koms.git
 ```
 
 2. Install all package dependencies:
 
 ```bash
-composer install
+$ composer install
 ```
 
 3. This project uses Node.js version `10.9.0`. To switch to it (& install it):
 
 ```bash
-nvm use
+$ nvm use
 ```
 
 4. Set up prettier for code formatting & husky for commit lint:
 
 ```bash
-npm i
+$ npm i
 ```
 
 5. This project requires a MySQL database (5.7 or above). For development purposes, you may install it locally or via Docker. Copy `.env.example` to `.env`, modify the below database config accordingly:
@@ -49,7 +49,13 @@ DB_PASSWORD=
 6. Run all database migrations & seed the database with sample data:
 
 ```bash
-php artisan migrate:fresh --seed
+$ php artisan migrate:fresh --seed
+```
+
+7. Generate the api key:
+
+```bash
+$ php artisan key:generate
 ```
 
 ## Running
@@ -57,10 +63,37 @@ php artisan migrate:fresh --seed
 ### Locally
 
 ```bash
-php artisan serve
+$ php artisan serve
 ```
 
 ### On Docker
+
+## Testing
+
+> Laravel will automatically pick up database config from `.env.testing` while running tests, where SQLite configuration is set up.
+>
+> This makes it easy to run tests on CircleCI and it also doesn't pollute the database being used for development.
+
+1. To set up the local SQLite test database:
+
+```bash
+$ touch database/database.sqlite
+$ php artisan migrate --env=testing
+```
+
+2. Copy `APP_KEY` from `.env` to `.env.testing`.
+
+3. Run all the tests:
+
+```bash
+$ php artisan test
+```
+
+4. Run a single test (e.g. ingredient listing):
+
+```bash
+$ php artisan test --filter testIngredientListing
+```
 
 ## Documentation
 

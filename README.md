@@ -365,15 +365,23 @@ Content-Type: application/json
 
 ### box_order_recipe
 
-> This table contains the list of recipes that go into a box.
+> This table contains the list of ingredients and recipes that go into a box.
+>
+> Rather than storing only references for recipes and ingredients, their names have also been copied over.
+> This is done to safeguard against any recipes or ingredients getting modified or deleted in the future.
 
-| field        | type                | nullable | default        |
-| ------------ | ------------------- | -------- | -------------- |
-| id           | bigint(20) unsigned | no       | auto_increment |
-| box_order_id | int(11)             | no       |                |
-| recipe_id    | int(11)             | no       |                |
-| created_at   | timestamp           | yes      |                |
-| updated_at   | timestamp           | yes      |                |
+| field              | type                             | nullable | default        |
+| ------------------ | -------------------------------- | -------- | -------------- |
+| id                 | bigint(20) unsigned              | no       | auto_increment |
+| box_order_id       | int(11)                          | no       |                |
+| recipe_id          | int(11)                          | no       |                |
+| recipe_name        | varchar(255)                     | no       |                |
+| ingredient_id      | int(11)                          | no       |                |
+| ingredient_name    | varchar(255)                     | no       |                |
+| ingredient_amount  | int(11)                          | no       |                |
+| ingredient_measure | enum('g','kg','ml','l','pieces') | no       |                |
+| created_at         | timestamp                        | yes      |                |
+| updated_at         | timestamp                        | yes      |                |
 
 ### users
 

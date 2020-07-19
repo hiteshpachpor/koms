@@ -48,29 +48,18 @@ class IngredientTest extends TestCase
      */
     public function testIngredientListing()
     {
-        $ingredients = factory(Ingredient::class, 5)->make();
+        // Create a few ingredients
+        $ingredients = factory(Ingredient::class, 5)->create();
 
-        foreach ($ingredients as $ingredient) {
-            $response = $this->postJson(
-                '/api/ingredients',
-                $ingredient->toArray()
-            );
+        // Make api call to list all ingredients
+        $response = $this->get('/api/ingredients');
+        $response->assertStatus(200);
 
-            $response->assertStatus(201);
+        $responseJson = $response->json();
 
-            $responseJson = $response->json();
-
-            $this->assertTrue(
-                in_array(
-                    $responseJson['measure'],
-                    Config::get('constants.ingredient_measure')
-                )
-            );
-
-            $this->assertDatabaseHas('ingredient', [
-                'name' => $ingredient['name'],
-            ]);
-        }
+        // All ingredients should be returned
+        $this->assertTrue(count($responseJson['data']) == 5);
+        $this->assertTrue($responseJson['total'] == 5);
 
         // To debug:
         // fwrite(STDERR, print_r("...", true));

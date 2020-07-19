@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/hiteshpachpor/koms.svg?style=svg&circle-token=bc5c52e2fd542cde5628dd9ad08e9526cc2ddd9e)](https://github.com/hiteshpachpor/koms)
+
 # Kitchen Order Management System
 
 This project is intended to be used as a backend for kitchens to manage their inventory and orders.

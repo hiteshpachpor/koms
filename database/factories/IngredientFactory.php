@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Config;
 
 $factory->define(Ingredient::class, function (Faker $faker) {
     return [
-        'name' => $faker->name,
+        'name' => $faker->unique()->name,
         'description' => $faker->sentence(
             $nbWords = 10,
             $variableNbWords = true

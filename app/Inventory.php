@@ -36,28 +36,21 @@ class Inventory extends Model
                 '=',
                 'box_order_recipe.box_order_id'
             )
-            ->join(
-                'recipe_ingredient',
-                'box_order_recipe.recipe_id',
-                '=',
-                'recipe_ingredient.recipe_id'
-            )
-            ->join(
-                'ingredient',
-                'recipe_ingredient.ingredient_id',
-                '=',
-                'ingredient.id'
-            )
-            ->where('delivery_date', '>=', $from->format('Y-m-d'))
-            ->where('delivery_date', '<=', $to->format('Y-m-d'))
+            ->where('box_order.delivery_date', '>=', $from->format('Y-m-d'))
+            ->where('box_order.delivery_date', '<=', $to->format('Y-m-d'))
             ->select(
-                'ingredient.name',
-                'ingredient.id',
+                'box_order_recipe.ingredient_id AS id',
                 DB::raw(
-                    'CAST(SUM(recipe_ingredient.amount) AS UNSIGNED) AS total_amount'
+                    'ANY_VALUE(box_order_recipe.ingredient_name) AS ingredient'
+                ),
+                DB::raw(
+                    'CAST(SUM(box_order_recipe.ingredient_amount) AS UNSIGNED) AS total_amount'
+                ),
+                DB::raw(
+                    'ANY_VALUE(box_order_recipe.ingredient_measure) AS measure'
                 )
             )
-            ->groupBy('ingredient.id')
+            ->groupBy('box_order_recipe.ingredient_id')
             ->get();
 
         return $data;

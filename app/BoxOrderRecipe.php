@@ -18,7 +18,15 @@ class BoxOrderRecipe extends Model
      *
      * @var array
      */
-    protected $fillable = ['box_order_id', 'recipe_id'];
+    protected $fillable = [
+        'box_order_id',
+        'recipe_id',
+        'recipe_name',
+        'ingredient_id',
+        'ingredient_name',
+        'ingredient_measure',
+        'ingredient_amount',
+    ];
 
     /**
      * Get the recipe associated with the box.

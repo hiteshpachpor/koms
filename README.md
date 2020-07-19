@@ -101,15 +101,110 @@ $ php artisan test --filter testIngredientListing
 
 ### 1. Create an ingredient
 
+**Request:**
+
+```json
+POST /api/ingredients HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "Chili",
+    "description": "Lorem ipsum.",
+    "in_stock": true,
+    "stock_qty": 50,
+    "measure": "g",
+    "supplier_id": 1
+}
+```
+
 ### 2. List ingredients
+
+**Request:**
+
+```json
+GET /api/ingredients HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+```
+
+> This API is paginated using `page` query parameter.
 
 ### 3. Create a recipe
 
+**Request:**
+
+```json
+POST /api/recipes HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "Gravy",
+    "description": "Lorem bro.",
+    "ingredients": [
+        {
+            "id": 7,
+            "amount": 1
+        },
+        {
+            "id": 8,
+            "amount": 2
+        },
+        {
+            "id": 9,
+            "amount": 3
+        }
+    ]
+}
+```
+
 ### 4. List recipes
+
+**Request:**
+
+```json
+GET /api/recipes HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+```
+
+> This API is paginated using `page` query parameter.
 
 ### 5. Create a box for a user
 
+**Request:**
+
+```json
+POST /api/box/create HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "user_id": 1,
+    "user_address_id": 1,
+    "delivery_date": "2020-07-25",
+    "delivery_slot": "Morning",
+    "delivery_notes": "Ring the bell.",
+    "recipes": [
+        1,
+        2,
+        3
+    ]
+}
+```
+
 ### 6. View the ingredients required to be ordered by the company
+
+**Request:**
+
+```json
+GET /api/purchase-order/{YYYY-MM-DD?} HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+```
+
+> If no date is passed, purchase order list for today + next 7 days is returned.
 
 ## Database Structure
 

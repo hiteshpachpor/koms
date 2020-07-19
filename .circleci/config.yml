@@ -45,9 +45,9 @@ jobs:
           command: php artisan key:generate
 
       # run tests with phpunit
-      - run:
-          name: "Run Unit Tests"
-          command: ./vendor/bin/phpunit tests/Unit
+      # - run:
+      #     name: "Run Unit Tests"
+      #     command: ./vendor/bin/phpunit tests/Unit
 
       # run tests with Laravel
       - run:

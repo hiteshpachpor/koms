@@ -50,13 +50,13 @@ $ docker-compose up -d
 4. Generate an api key:
 
 ```bash
-$ docker-compose exec -it koms-app php artisan key:generate
+$ docker exec -it koms-app php artisan key:generate
 ```
 
 5. Cache settings:
 
 ```bash
-$ docker-compose exec -it koms-app php artisan config:cache
+$ docker exec -it koms-app php artisan config:cache
 ```
 
 > After this, you will be able to access the Laravel app on [http://localhost:8080/](http://localhost:8080/)
@@ -66,7 +66,7 @@ $ docker-compose exec -it koms-app php artisan config:cache
 6. Create a new MySQL user for the Laravel app:
 
 ```bash
-$ docker-compose exec -it koms-db bash
+$ docker exec -it koms-db bash
 root@<container>:/# mysql -u root -p
 mysql> GRANT ALL ON koms.* TO 'komsuser'@'%' IDENTIFIED BY 'password';
 mysql> FLUSH PRIVILEGES;
@@ -77,13 +77,13 @@ mysql> FLUSH PRIVILEGES;
 7. Run all database migrations & seed the database with sample data:
 
 ```bash
-$ docker-compose exec -it koms-app php artisan migrate:fresh --seed
+$ docker exec -it koms-app php artisan migrate:fresh --seed
 ```
 
 If you only want to run database migrations:
 
 ```bash
-$ docker-compose exec -it koms-app php artisan migrate
+$ docker exec -it koms-app php artisan migrate
 ```
 
 ## Run it manually

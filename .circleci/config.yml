@@ -44,12 +44,23 @@ jobs:
           name: "Generate App key"
           command: php artisan key:generate
 
-      # run tests with phpunit
+      - run:
+          name: "Create database and run migration"
+          command: |
+            touch database/database.sqlite
+            php artisan migrate --env=testing
+
+      # run unit tests with phpunit
       # - run:
       #     name: "Run Unit Tests"
       #     command: ./vendor/bin/phpunit tests/Unit
 
-      # run tests with Laravel
+      # run feature tests with phpunit
+      # - run:
+      #     name: "Run Http Tests"
+      #     command: ./vendor/bin/phpunit tests/Feature
+
+      # run all tests with Laravel
       - run:
           name: "Run All Laravel Tests"
           command: php artisan test

@@ -1,0 +1,66 @@
+version: "3"
+services:
+  # PHP Service
+  koms-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hiteshpachpor/koms-app
+    container_name: koms-app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - koms-network
+
+  # Nginx Service
+  koms-webserver:
+    image: nginx:alpine
+    container_name: koms-webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - koms-network
+
+  # MySQL Service
+  koms-db:
+    image: mysql:5.7.22
+    container_name: koms-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: koms
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: komsuser
+      MYSQL_PASSWORD: password
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - koms-network
+
+# Docker Networks
+networks:
+  koms-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  dbdata:
+    driver: local

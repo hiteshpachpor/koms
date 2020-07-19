@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\BoxOrder;
 use App\BoxOrderRecipe;
+use App\Recipe;
+use App\Http\Resources\BoxOrder as BoxOrderResource;
 
 class BoxOrderController extends Controller
 {
@@ -40,10 +42,23 @@ class BoxOrderController extends Controller
         // Save the box's recipes
         if ($request->has('recipes')) {
             foreach ($request->get('recipes') as $recipeId) {
-                $boxOrderRecipe = new BoxOrderRecipe([
-                    'recipe_id' => $recipeId,
-                ]);
-                $boxOrder->recipes()->save($boxOrderRecipe);
+                $recipe = Recipe::with('ingredientList.ingredient')->find(
+                    $recipeId
+                );
+                $ingredients = $recipe->ingredientList;
+
+                foreach ($ingredients as $ingredient) {
+                    $boxOrderRecipe = new BoxOrderRecipe([
+                        'recipe_id' => $recipeId,
+                        'recipe_name' => $recipe->name,
+                        'ingredient_id' => $ingredient->ingredient->id,
+                        'ingredient_name' => $ingredient->ingredient->name,
+                        'ingredient_measure' =>
+                            $ingredient->ingredient->measure,
+                        'ingredient_amount' => $ingredient->amount,
+                    ]);
+                    $boxOrder->recipes()->save($boxOrderRecipe);
+                }
             }
         }
 
@@ -58,10 +73,10 @@ class BoxOrderController extends Controller
      */
     public function show($id)
     {
-        return BoxOrder::with([
-            'user',
-            'userAddress',
-            'recipes.recipe.ingredientList.ingredient',
-        ])->find($id);
+        $boxOrder = BoxOrder::with(['user', 'userAddress', 'recipes'])->find(
+            $id
+        );
+
+        return new BoxOrderResource($boxOrder);
     }
 }

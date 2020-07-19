@@ -17,6 +17,14 @@ class CreateBoxOrderRecipeTable extends Migration
             $table->id();
             $table->integer('box_order_id');
             $table->integer('recipe_id');
+            $table->string('recipe_name');
+            $table->integer('ingredient_id');
+            $table->string('ingredient_name');
+            $table->integer('ingredient_amount');
+            $table->enum(
+                'ingredient_measure',
+                Config::get('constants.ingredient_measure')
+            );
             $table->timestamps();
         });
     }

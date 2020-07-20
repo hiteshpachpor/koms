@@ -23,12 +23,14 @@ class BoxOrderController extends Controller
      */
     public function create(Request $request)
     {
+        $maxRecipesInABox = Config::get('constants.max_recipes_in_a_box');
+
         // Validate general fields
         $request->validate([
             'user_id' => ['required', 'exists:\App\User,id'],
             'user_address_id' => ['required', 'exists:\App\UserAddress,id'],
             'delivery_date' => ['required', 'date_format:Y-m-d'],
-            'recipes' => ['required', 'array'],
+            'recipes' => ['required', 'array', "between:1,{$maxRecipesInABox}"],
         ]);
 
         // Validate delivery_slot field
@@ -61,9 +63,8 @@ class BoxOrderController extends Controller
         }
 
         // Validate all the recipe ids
-        $validator = Validator::make($request->get('recipes'), [
-            'required',
-            'exists:\App\Recipe,id',
+        $validator = Validator::make($request->all(), [
+            'recipes.*' => ['required', 'exists:\App\Recipe,id'],
         ]);
 
         if ($validator->fails()) {

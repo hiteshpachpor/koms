@@ -70,14 +70,98 @@ class IngredientTest extends TestCase
     }
 
     /**
-     * @todo testCannotCreateIngredientIfMissingInput
+     * API should throw a 422 Unprocessable Entity error
+     * if a required input is missing
+     *
+     * @return void
      */
+    public function testCannotCreateIngredientIfMissingInput()
+    {
+        // Missing inputs - name, in_stock, stock_qty
+        $supplier = factory(Supplier::class)->create();
+        $ingredient = [
+            'description' => 'Lorem ipsum.',
+            'measure' => 'g',
+            'supplier_id' => $supplier->id,
+        ];
+
+        $response = $this->postJson('/api/ingredients', $ingredient);
+        $response->assertStatus(
+            \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+        $response->assertJson([
+            'message' => 'The given data was invalid.',
+            'errors' => [
+                'name' => ['The name field is required.'],
+                'in_stock' => ['The in stock field is required.'],
+                'stock_qty' => ['The stock qty field is required.'],
+            ],
+        ]);
+    }
 
     /**
-     * @todo testCannotCreateIngredientIfMeasureInvalid
+     * API should throw a 422 Unprocessable Entity error
+     * if the measure string is invalid (not in the enum)
+     *
+     * @return void
      */
+    public function testCannotCreateIngredientIfMeasureInvalid()
+    {
+        // gms is not in the measure enum list
+        $supplier = factory(Supplier::class)->create();
+        $ingredient = [
+            'name' => 'Chili flakes',
+            'description' => 'Lorem ipsum.',
+            'in_stock' => true,
+            'stock_qty' => 50,
+            'measure' => 'gms',
+            'supplier_id' => $supplier->id,
+        ];
+
+        $response = $this->postJson('/api/ingredients', $ingredient);
+        $response->assertStatus(
+            \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+        $response->assertJson([
+            'message' =>
+                'Measure is invalid. Permissible values are g, kg, ml, l, pieces.',
+        ]);
+    }
 
     /**
-     * @todo testCannotCreateIngredientIfNameConflict
+     * API should throw a 422 Unprocessable Entity error
+     * if the name is already taken.
+     *
+     * @return void
      */
+    public function testCannotCreateIngredientIfNameConflict()
+    {
+        $supplier = factory(Supplier::class)->create();
+
+        // Create an ingredient using factory
+        $firstIngredient = factory(Ingredient::class)->create([
+            'supplier_id' => $supplier->id,
+        ]);
+
+        // Prepare payload for API
+        $secondIngredient = [
+            'name' => $firstIngredient->name, // same name as the first one
+            'description' => 'Lorem ipsum.',
+            'in_stock' => true,
+            'stock_qty' => 50,
+            'measure' => 'gms',
+            'supplier_id' => $supplier->id,
+        ];
+
+        $response = $this->postJson('/api/ingredients', $secondIngredient);
+        $response->assertStatus(
+            \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+        $response->assertJson([
+            'message' => 'The given data was invalid.',
+            'errors' => [
+                'name' => ['The name has already been taken.'],
+            ],
+        ]);
+    }
 }

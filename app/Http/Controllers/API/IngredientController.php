@@ -46,7 +46,7 @@ class IngredientController extends Controller
         if ($validator->fails()) {
             $measuresString = implode(', ', $measures);
             abort(
-                422,
+                \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY,
                 "Measure is invalid. Permissible values are ${measuresString}."
             );
         }

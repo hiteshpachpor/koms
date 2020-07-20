@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 use App\Ingredient;
+use App\Supplier;
 
 class IngredientTest extends TestCase
 {
@@ -19,7 +20,10 @@ class IngredientTest extends TestCase
      */
     public function testIngredientCreation()
     {
-        $ingredient = factory(Ingredient::class)->make();
+        $supplier = factory(Supplier::class)->create();
+        $ingredient = factory(Ingredient::class)->make([
+            'supplier_id' => $supplier->id,
+        ]);
 
         $response = $this->postJson('/api/ingredients', $ingredient->toArray());
         $response->assertStatus(201);
@@ -38,7 +42,7 @@ class IngredientTest extends TestCase
         ]);
 
         // To debug:
-        // fwrite(STDERR, print_r("...", true));
+        // fwrite(STDERR, print_r($responseJson, true));
     }
 
     /**

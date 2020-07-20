@@ -15,10 +15,10 @@ class CreateBoxOrderRecipeTable extends Migration
     {
         Schema::create('box_order_recipe', function (Blueprint $table) {
             $table->id();
-            $table->integer('box_order_id');
-            $table->integer('recipe_id');
+            $table->unsignedBigInteger('box_order_id');
+            $table->unsignedBigInteger('recipe_id');
             $table->string('recipe_name');
-            $table->integer('ingredient_id');
+            $table->unsignedBigInteger('ingredient_id');
             $table->string('ingredient_name');
             $table->integer('ingredient_amount');
             $table->enum(

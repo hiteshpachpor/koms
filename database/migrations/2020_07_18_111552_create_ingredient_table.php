@@ -16,15 +16,15 @@ class CreateIngredientTable extends Migration
     {
         Schema::create('ingredient', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description');
-            $table->binary('in_stock');
-            $table->integer('stock_qty');
+            $table->string('name')->unique();
+            $table->text('description')->nullable();
+            $table->tinyInteger('in_stock')->default(1);
+            $table->integer('stock_qty')->default(0);
             $table->enum(
                 'measure',
                 Config::get('constants.ingredient_measure')
             );
-            $table->integer('supplier_id');
+            $table->unsignedBigInteger('supplier_id');
             $table->timestamps();
         });
     }

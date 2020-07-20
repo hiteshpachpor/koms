@@ -15,14 +15,14 @@ class CreateBoxOrderTable extends Migration
     {
         Schema::create('box_order', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->integer('user_address_id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_address_id');
             $table->date('delivery_date');
             $table->enum(
                 'delivery_slot',
                 Config::get('constants.box_order_delivery_slot')
             );
-            $table->string('delivery_notes');
+            $table->string('delivery_notes')->nullable();
             $table->timestamps();
         });
     }

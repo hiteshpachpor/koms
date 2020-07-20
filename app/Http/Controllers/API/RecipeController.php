@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Recipe;
 use App\RecipeIngredient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class RecipeController extends Controller
 {
@@ -27,11 +29,32 @@ class RecipeController extends Controller
      */
     public function store(Request $request)
     {
-        $fields = ["name", "description"];
+        // Validate general fields
+        $request->validate([
+            'name' => ['required', 'unique:\App\Recipe', 'max:255'],
+        ]);
+
+        // Validate all the ingredient ids
+        if ($request->has('ingredients')) {
+            foreach ($request->get('ingredients') as $ingredient) {
+                $validator = Validator::make($ingredient, [
+                    'id' => ['required', 'exists:\App\Ingredient,id'],
+                    'amount' => ['required', 'integer'],
+                ]);
+
+                if ($validator->fails()) {
+                    abort(
+                        422,
+                        "Invalid ingredient amount or id {$ingredient['id']}."
+                    );
+                }
+            }
+        }
 
         $recipe = new Recipe();
 
         // Only assign valid fields to the model
+        $fields = ["name", "description"];
         foreach ($fields as $field) {
             if ($request->has($field)) {
                 $recipe->{$field} = $request->get($field);

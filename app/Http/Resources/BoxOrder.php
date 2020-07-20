@@ -7,16 +7,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class BoxOrder extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * Group all the ingredients into their recipes
      */
-    public function toArray($request)
+    public function getRecipes()
     {
         $recipes = [];
 
-        // Group all the ingredients into their recipes
+        if (!isset($this->recipes)) {
+            return $recipes;
+        }
+
         foreach ($this->recipes as $boxOrderRecipe) {
             $ingredient = [
                 'id' => $boxOrderRecipe->ingredient_id,
@@ -37,6 +37,25 @@ class BoxOrder extends JsonResource
                 ];
             }
         }
+
+        return $recipes;
+    }
+
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function toArray($request)
+    {
+        // Return if object is not set
+        if (!isset($this->id)) {
+            return [];
+        }
+
+        // Group all the ingredients into their recipes
+        $recipes = $this->getRecipes();
 
         // Add it to the response
         $response['recipes'] = array_values($recipes);

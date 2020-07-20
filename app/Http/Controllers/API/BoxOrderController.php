@@ -77,6 +77,11 @@ class BoxOrderController extends Controller
             $id
         );
 
+        // Throw a 404 if the box_order is not found
+        if (!isset($boxOrder->id)) {
+            abort(404, "No box was found with id ${id}.");
+        }
+
         return new BoxOrderResource($boxOrder);
     }
 }

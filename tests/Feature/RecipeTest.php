@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Supplier;
 use App\Ingredient;
 use App\Recipe;
 use App\RecipeIngredient;
@@ -23,9 +24,13 @@ class RecipeTest extends TestCase
         // Create a Faker instance
         $faker = \Faker\Factory::create();
 
-        // Create a few ingredients
-        $ingredients = factory(Ingredient::class, 5)->create();
-        $ingredientsInRecipe = [];
+        // Create a supplier
+        $supplier = factory(Supplier::class)->create();
+
+        // Create a few ingredient using factory
+        $ingredients = factory(Ingredient::class, 5)->create([
+            'supplier_id' => $supplier->id,
+        ]);
 
         // Prepare ingredients for payload
         foreach ($ingredients as $ingredient) {
@@ -100,14 +105,181 @@ class RecipeTest extends TestCase
     }
 
     /**
-     * @todo testCannotCreateRecipeIfMissingInput
+     * API should throw a 422 Unprocessable Entity error
+     * if recipe name is missing
+     *
+     * @return void
      */
+    public function testCannotCreateRecipeIfMissingInput()
+    {
+        // Missing inputs - name
+        // A recipe can be created without mapping any ingredients to it
+        $recipe = [
+            'description' => 'Lorem ipsum.',
+        ];
+
+        $response = $this->postJson('/api/recipes', $recipe);
+        $response->assertStatus(
+            \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+        $response->assertJson([
+            'message' => 'The given data was invalid.',
+            'errors' => [
+                'name' => ['The name field is required.'],
+            ],
+        ]);
+    }
 
     /**
-     * @todo testCannotCreateBoxOrderIfIngredientIdInvalid
+     * API should throw a 422 Unprocessable Entity error
+     * if any ingredient id is invalid
+     *
+     * @return void
      */
+    public function testCannotCreateRecipeIfIngredientIdInvalid()
+    {
+        // Create a Faker instance
+        $faker = \Faker\Factory::create();
+
+        // Create a supplier
+        $supplier = factory(Supplier::class)->create();
+
+        // Create a few ingredient using factory
+        $ingredients = factory(Ingredient::class, 5)->create([
+            'supplier_id' => $supplier->id,
+        ]);
+
+        // Prepare ingredients for payload
+        foreach ($ingredients as $ingredient) {
+            $ingredientsInRecipe[] = [
+                'id' => $ingredient->id,
+                'amount' => $faker->numberBetween($min = 1, $max = 5),
+            ];
+        }
+
+        // Add a random ingredient to the list too
+        $ingredientsInRecipe[] = [
+            'id' => 9999,
+            'amount' => 10,
+        ];
+
+        // Prepare recipe payload
+        $recipe = [
+            'name' => $faker->unique()->name,
+            'description' => $faker->sentence(
+                $nbWords = 10,
+                $variableNbWords = true
+            ),
+            'ingredients' => $ingredientsInRecipe,
+        ];
+
+        $response = $this->postJson('/api/recipes', $recipe);
+        $response->assertStatus(
+            \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+        $response->assertJson([
+            'message' => 'Invalid ingredient amount or id 9999.',
+        ]);
+    }
 
     /**
-     * @todo testCannotCreateRecipeIfNameConflict
+     * API should throw a 422 Unprocessable Entity error
+     * if any ingredient's amount is not valid
+     *
+     * @return void
      */
+    public function testCannotCreateRecipeIfIngredientAmountInvalid()
+    {
+        // Create a Faker instance
+        $faker = \Faker\Factory::create();
+
+        // Create a supplier
+        $supplier = factory(Supplier::class)->create();
+
+        // Create a few ingredient using factory
+        $ingredients = factory(Ingredient::class, 5)->create([
+            'supplier_id' => $supplier->id,
+        ]);
+
+        // Prepare ingredients for payload
+        foreach ($ingredients as $ingredient) {
+            $ingredientsInRecipe[] = [
+                'id' => $ingredient->id,
+                'amount' => $faker->numberBetween($min = 1, $max = 5),
+            ];
+        }
+
+        // Make first ingredient's amount a string
+        $ingredientsInRecipe[0]['amount'] = 'five';
+
+        // Prepare recipe payload
+        $recipe = [
+            'name' => $faker->unique()->name,
+            'description' => $faker->sentence(
+                $nbWords = 10,
+                $variableNbWords = true
+            ),
+            'ingredients' => $ingredientsInRecipe,
+        ];
+
+        $response = $this->postJson('/api/recipes', $recipe);
+        $response->assertStatus(
+            \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+        $response->assertJson([
+            'message' => 'Invalid ingredient amount or id 1.',
+        ]);
+    }
+
+    /**
+     * API should throw a 422 Unprocessable Entity error
+     * if the name is already taken.
+     *
+     * @return void
+     */
+    public function testCannotCreateRecipeIfNameConflict()
+    {
+        // Create a recipe
+        $firstRecipe = factory(Recipe::class)->create();
+
+        // Create a Faker instance
+        $faker = \Faker\Factory::create();
+
+        // Create a supplier
+        $supplier = factory(Supplier::class)->create();
+
+        // Create a few ingredient using factory
+        $ingredients = factory(Ingredient::class, 5)->create([
+            'supplier_id' => $supplier->id,
+        ]);
+
+        // Prepare ingredients for payload
+        foreach ($ingredients as $ingredient) {
+            $ingredientsInRecipe[] = [
+                'id' => $ingredient->id,
+                'amount' => $faker->numberBetween($min = 1, $max = 5),
+            ];
+        }
+
+        // Prepare recipe payload
+        $secondRecipe = [
+            'name' => $firstRecipe->name,
+            'description' => $faker->sentence(
+                $nbWords = 10,
+                $variableNbWords = true
+            ),
+            'ingredients' => $ingredientsInRecipe,
+        ];
+
+        $response = $this->postJson('/api/recipes', $secondRecipe);
+        $response->assertStatus(
+            \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+        $response->assertJson([
+            'message' => 'The given data was invalid.',
+            'errors' => [
+                'name' => ['The name has already been taken.'],
+            ],
+        ]);
+    }
 }

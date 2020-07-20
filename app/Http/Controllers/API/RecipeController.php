@@ -44,7 +44,7 @@ class RecipeController extends Controller
 
                 if ($validator->fails()) {
                     abort(
-                        422,
+                        \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY,
                         "Invalid ingredient amount or id {$ingredient['id']}."
                     );
                 }

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
 
 class BoxOrder extends Model
 {
@@ -48,5 +49,47 @@ class BoxOrder extends Model
     public function recipes()
     {
         return $this->hasMany('App\BoxOrderRecipe', 'box_order_id', 'id');
+    }
+
+    /**
+     * Returns true if the requested delivery date & slot is valid.
+     * Any delivery date in the past or 48 hours from now is not valid.
+     *
+     * @param String $date
+     * @param String $slot
+     */
+    public static function isDeliveryDateSlotValid($date = null, $slot = null)
+    {
+        $availableDeliverySlots = Config::get(
+            'constants.box_order_delivery_slot'
+        );
+
+        if (!$date) {
+            $date = new \DateTime();
+            $date = $date->format('Y-m-d');
+        }
+
+        if (!$slot) {
+            $slot = $availableDeliverySlots[0];
+        }
+
+        $time;
+        switch ($slot) {
+            case $availableDeliverySlots[0]: // Morning
+                $time = '06:00:00';
+                break;
+            case $availableDeliverySlots[1]: // Afternoon
+                $time = '12:00:00';
+                break;
+            case $availableDeliverySlots[2]: // Evening
+            default:
+                $time = '18:00:00';
+                break;
+        }
+
+        $dateTime = new \DateTime(implode(' ', [$date, $time]));
+        $cannotOrderBefore = new \DateTime('+2 days');
+
+        return $dateTime >= $cannotOrderBefore;
     }
 }

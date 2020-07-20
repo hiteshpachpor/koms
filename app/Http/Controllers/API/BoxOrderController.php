@@ -4,10 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Ingredient;
+use App\Recipe;
 use App\BoxOrder;
 use App\BoxOrderRecipe;
-use App\Recipe;
 use App\Http\Resources\BoxOrder as BoxOrderResource;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class BoxOrderController extends Controller
 {
@@ -19,6 +23,78 @@ class BoxOrderController extends Controller
      */
     public function create(Request $request)
     {
+        // Validate general fields
+        $request->validate([
+            'user_id' => ['required', 'exists:\App\User,id'],
+            'user_address_id' => ['required', 'exists:\App\UserAddress,id'],
+            'delivery_date' => ['required', 'date_format:Y-m-d'],
+            'recipes' => ['required', 'array'],
+        ]);
+
+        // Validate delivery_slot field
+        $availableDeliverySlots = Config::get(
+            'constants.box_order_delivery_slot'
+        );
+        $validator = Validator::make($request->all(), [
+            'delivery_slot' => ['required', Rule::in($availableDeliverySlots)],
+        ]);
+
+        if ($validator->fails()) {
+            $deliverySlotsString = implode(', ', $availableDeliverySlots);
+            abort(
+                \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY,
+                "Delivery slot is incorrect. Permissible values are ${deliverySlotsString}."
+            );
+        }
+
+        // Validate delivery_date & delivery_slot
+        $deliveryDateSlotIsValid = BoxOrder::isDeliveryDateSlotValid(
+            $request->delivery_date,
+            $request->delivery_slot
+        );
+
+        if (!$deliveryDateSlotIsValid) {
+            abort(
+                \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY,
+                "Sorry, this slot is not available. Please choose a different slot."
+            );
+        }
+
+        // Validate all the recipe ids
+        $validator = Validator::make($request->get('recipes'), [
+            'required',
+            'exists:\App\Recipe,id',
+        ]);
+
+        if ($validator->fails()) {
+            abort(
+                \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY,
+                "One or more recipe ids are invalid."
+            );
+        }
+
+        // Check if all the ingredients are in stock
+        foreach ($request->get('recipes') as $recipeId) {
+            $recipe = Recipe::with('ingredientList.ingredient')->find(
+                $recipeId
+            );
+            $ingredients = $recipe->ingredientList;
+
+            foreach ($ingredients as $ingredient) {
+                // If the ingredient is out of stock,
+                // this recipe cannot be added to the box.
+                if (
+                    !$ingredient->ingredient->in_stock ||
+                    $ingredient->ingredient->stock_qty == 0
+                ) {
+                    abort(
+                        \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY,
+                        "Sorry, the recipe '{$recipe->name}' has an ingredient '{$ingredient->ingredient->name}' which currently out of stock. Please choose a different recipe."
+                    );
+                }
+            }
+        }
+
         $fields = [
             'user_id',
             'user_address_id',
@@ -40,25 +116,23 @@ class BoxOrderController extends Controller
         $boxOrder->save();
 
         // Save the box's recipes
-        if ($request->has('recipes')) {
-            foreach ($request->get('recipes') as $recipeId) {
-                $recipe = Recipe::with('ingredientList.ingredient')->find(
-                    $recipeId
-                );
-                $ingredients = $recipe->ingredientList;
+        foreach ($request->get('recipes') as $recipeId) {
+            $recipe = Recipe::with('ingredientList.ingredient')->find(
+                $recipeId
+            );
+            $ingredients = $recipe->ingredientList;
 
-                foreach ($ingredients as $ingredient) {
-                    $boxOrderRecipe = new BoxOrderRecipe([
-                        'recipe_id' => $recipeId,
-                        'recipe_name' => $recipe->name,
-                        'ingredient_id' => $ingredient->ingredient->id,
-                        'ingredient_name' => $ingredient->ingredient->name,
-                        'ingredient_measure' =>
-                            $ingredient->ingredient->measure,
-                        'ingredient_amount' => $ingredient->amount,
-                    ]);
-                    $boxOrder->recipes()->save($boxOrderRecipe);
-                }
+            foreach ($ingredients as $ingredient) {
+                $boxOrderRecipe = new BoxOrderRecipe([
+                    'recipe_id' => $recipeId,
+                    'recipe_name' => $recipe->name,
+                    'ingredient_id' => $ingredient->ingredient->id,
+                    'ingredient_name' => $ingredient->ingredient->name,
+                    'ingredient_measure' => $ingredient->ingredient->measure,
+                    'ingredient_amount' => $ingredient->amount,
+                ]);
+
+                $boxOrder->recipes()->save($boxOrderRecipe);
             }
         }
 

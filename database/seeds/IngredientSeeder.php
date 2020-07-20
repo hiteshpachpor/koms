@@ -20,11 +20,17 @@ class IngredientSeeder extends Seeder
         // Create a variety of ingredients
         $ingredientNames = [];
 
-        for ($i = 0; $i < 10; $i++) {
-            $ingredientNames[] = $faker->vegetableName();
-            $ingredientNames[] = $faker->fruitName();
-            $ingredientNames[] = $faker->meatName();
-            $ingredientNames[] = $faker->sauceName();
+        // There aren't many unique names in this library
+        for ($i = 0; $i < 5; $i++) {
+            $ingredientNames[] = $faker->unique()->vegetableName();
+            $ingredientNames[] = $faker->unique()->fruitName();
+            $ingredientNames[] = $faker->unique()->meatName();
+            $ingredientNames[] = $faker->unique()->sauceName();
+        }
+
+        // Fill the rest with first names
+        for ($i = 0; $i < 20; $i++) {
+            $ingredientNames[] = $faker->unique()->firstName;
         }
 
         // Seed

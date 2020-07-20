@@ -51,7 +51,7 @@ class RecipeTest extends TestCase
 
         $responseJson = $response->json();
 
-        $this->assertTrue($responseJson['name'] == $recipe['name']);
+        $this->assertEquals($responseJson['name'], $recipe['name']);
 
         $this->assertDatabaseHas('recipe', [
             'name' => $recipe['name'],
@@ -95,7 +95,7 @@ class RecipeTest extends TestCase
         $responseJson = $response->json();
 
         // All recipes should be returned
-        $this->assertTrue(count($responseJson['data']) == 5);
-        $this->assertTrue($responseJson['total'] == 5);
+        $this->assertEquals(count($responseJson['data']), 5);
+        $this->assertEquals($responseJson['total'], 5);
     }
 }

@@ -58,8 +58,8 @@ class IngredientTest extends TestCase
         $responseJson = $response->json();
 
         // All ingredients should be returned
-        $this->assertTrue(count($responseJson['data']) == 5);
-        $this->assertTrue($responseJson['total'] == 5);
+        $this->assertEquals(count($responseJson['data']), 5);
+        $this->assertEquals($responseJson['total'], 5);
 
         // To debug:
         // fwrite(STDERR, print_r("...", true));

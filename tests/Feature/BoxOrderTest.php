@@ -84,8 +84,9 @@ class BoxOrderTest extends TestCase
 
         $responseJson = $response->json();
 
-        $this->assertTrue(
-            count($responseJson['data']['recipes']) == count($recipeIds)
+        $this->assertEquals(
+            count($responseJson['data']['recipes']),
+            count($recipeIds)
         );
 
         $this->assertDatabaseHas('box_order', [

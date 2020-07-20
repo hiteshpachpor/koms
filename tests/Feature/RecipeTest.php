@@ -98,4 +98,16 @@ class RecipeTest extends TestCase
         $this->assertEquals(count($responseJson['data']), 5);
         $this->assertEquals($responseJson['total'], 5);
     }
+
+    /**
+     * @todo testCannotCreateRecipeIfMissingInput
+     */
+
+    /**
+     * @todo testCannotCreateBoxOrderIfIngredientIdInvalid
+     */
+
+    /**
+     * @todo testCannotCreateRecipeIfNameConflict
+     */
 }

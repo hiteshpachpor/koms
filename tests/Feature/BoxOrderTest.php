@@ -93,4 +93,24 @@ class BoxOrderTest extends TestCase
             'id' => $response['data']['id'],
         ]);
     }
+
+    /**
+     * @todo testCannotCreateBoxOrderIfMissingInput
+     */
+
+    /**
+     * @todo testCannotCreateBoxOrderIfIngredientOutOfStock
+     */
+
+    /**
+     * @todo testCannotCreateBoxOrderIfDateInvalid
+     */
+
+    /**
+     * @todo testCannotCreateBoxOrderIfRecipeIdInvalid
+     */
+
+    /**
+     * @todo testCannotCreateBoxOrderIfDeliverySlotInvalid
+     */
 }

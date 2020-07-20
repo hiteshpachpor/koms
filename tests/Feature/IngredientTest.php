@@ -64,4 +64,16 @@ class IngredientTest extends TestCase
         // To debug:
         // fwrite(STDERR, print_r("...", true));
     }
+
+    /**
+     * @todo testCannotCreateIngredientIfMissingInput
+     */
+
+    /**
+     * @todo testCannotCreateIngredientIfMeasureInvalid
+     */
+
+    /**
+     * @todo testCannotCreateIngredientIfNameConflict
+     */
 }

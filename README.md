@@ -304,11 +304,11 @@ Content-Type: application/json
 | ----------- | -------------------------------- | -------- | -------------- |
 | id          | bigint(20) unsigned              | no       | auto_increment |
 | name        | varchar(255)                     | no       |                |
-| description | text                             | no       |                |
-| in_stock    | blob                             | no       |                |
-| stock_qty   | int(11)                          | no       |                |
+| description | text                             | yes      |                |
+| in_stock    | tinyint(4)                       | no       | 1              |
+| stock_qty   | int(11)                          | no       | 0              |
 | measure     | enum('g','kg','ml','l','pieces') | no       |                |
-| supplier_id | int(11)                          | no       |                |
+| supplier_id | bigint(20) unsigned              | no       |                |
 | created_at  | timestamp                        | yes      |                |
 | updated_at  | timestamp                        | yes      |                |
 
@@ -331,7 +331,7 @@ Content-Type: application/json
 | ----------- | ------------------- | -------- | -------------- |
 | id          | bigint(20) unsigned | no       | auto_increment |
 | name        | varchar(255)        | no       |                |
-| description | text                | no       |                |
+| description | text                | yes      |                |
 | created_at  | timestamp           | yes      |                |
 | updated_at  | timestamp           | yes      |                |
 
@@ -342,8 +342,8 @@ Content-Type: application/json
 | field         | type                | nullable | default        |
 | ------------- | ------------------- | -------- | -------------- |
 | id            | bigint(20) unsigned | no       | auto_increment |
-| recipe_id     | int(11)             | no       |                |
-| ingredient_id | int(11)             | no       |                |
+| recipe_id     | bigint(20) unsigned | no       |                |
+| ingredient_id | bigint(20) unsigned | no       |                |
 | amount        | int(11)             | no       |                |
 | created_at    | timestamp           | yes      |                |
 | updated_at    | timestamp           | yes      |                |
@@ -355,11 +355,11 @@ Content-Type: application/json
 | field           | type                                  | nullable | default        |
 | --------------- | ------------------------------------- | -------- | -------------- |
 | id              | bigint(20) unsigned                   | no       | auto_increment |
-| user_id         | int(11)                               | no       |                |
-| user_address_id | int(11)                               | no       |                |
+| user_id         | bigint(20) unsigned                   | no       |                |
+| user_address_id | bigint(20) unsigned                   | no       |                |
 | delivery_date   | date                                  | no       |                |
 | delivery_slot   | enum('Morning','Afternoon','Evening') | no       |                |
-| delivery_notes  | varchar(255)                          | no       |                |
+| delivery_notes  | varchar(255)                          | yes      |                |
 | created_at      | timestamp                             | yes      |                |
 | updated_at      | timestamp                             | yes      |                |
 
@@ -373,10 +373,10 @@ Content-Type: application/json
 | field              | type                             | nullable | default        |
 | ------------------ | -------------------------------- | -------- | -------------- |
 | id                 | bigint(20) unsigned              | no       | auto_increment |
-| box_order_id       | int(11)                          | no       |                |
-| recipe_id          | int(11)                          | no       |                |
+| box_order_id       | bigint(20) unsigned              | no       |                |
+| recipe_id          | bigint(20) unsigned              | no       |                |
 | recipe_name        | varchar(255)                     | no       |                |
-| ingredient_id      | int(11)                          | no       |                |
+| ingredient_id      | bigint(20) unsigned              | no       |                |
 | ingredient_name    | varchar(255)                     | no       |                |
 | ingredient_amount  | int(11)                          | no       |                |
 | ingredient_measure | enum('g','kg','ml','l','pieces') | no       |                |
@@ -397,7 +397,7 @@ Content-Type: application/json
 | remember_token    | varchar(100)        | yes      |                |
 | created_at        | timestamp           | yes      |                |
 | updated_at        | timestamp           | yes      |                |
-| phone             | varchar(16)         | no       |                |
+| phone             | varchar(16)         | yes      |                |
 
 ### user_address
 
@@ -406,7 +406,7 @@ Content-Type: application/json
 | field      | type                | nullable | default        |
 | ---------- | ------------------- | -------- | -------------- |
 | id         | bigint(20) unsigned | no       | auto_increment |
-| user_id    | int(11)             | no       |                |
+| user_id    | bigint(20) unsigned | no       |                |
 | name       | varchar(255)        | no       |                |
 | phone      | varchar(16)         | no       |                |
 | flat       | varchar(64)         | no       |                |

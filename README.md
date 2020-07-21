@@ -301,12 +301,16 @@ Content-Type: application/json
 **Request:**
 
 ```json
-GET /api/purchase-order/{YYYY-MM-DD?} HTTP/1.1
+GET /api/purchase-order?order_date=YYYY-MM-DD&supplier_id=N HTTP/1.1
 Accept: application/json
 Content-Type: application/json
 ```
 
+> Both `order_date` and `supplier_id` are optional fields.
+>
 > If no date is passed, purchase order list for today + next 7 days is returned.
+>
+> If no supplier id is passed, the entire list is returned as per date filter.
 
 ## Database Structure
 

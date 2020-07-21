@@ -4,6 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
+use App\Recipe;
+use App\BoxOrderRecipe;
 
 class BoxOrder extends Model
 {
@@ -91,5 +93,32 @@ class BoxOrder extends Model
         $cannotOrderBefore = new \DateTime('+2 days');
 
         return $dateTime >= $cannotOrderBefore;
+    }
+
+    /**
+     * Add a recipe to the box
+     *
+     * @param int $recipeId
+     * @return this
+     */
+    public function addRecipe($recipeId)
+    {
+        $recipe = Recipe::with('ingredientList.ingredient')->find($recipeId);
+        $ingredients = $recipe->ingredientList;
+
+        foreach ($ingredients as $ingredient) {
+            $boxOrderRecipe = new BoxOrderRecipe([
+                'recipe_id' => $recipeId,
+                'recipe_name' => $recipe->name,
+                'ingredient_id' => $ingredient->ingredient->id,
+                'ingredient_name' => $ingredient->ingredient->name,
+                'ingredient_measure' => $ingredient->ingredient->measure,
+                'ingredient_amount' => $ingredient->amount,
+            ]);
+
+            $this->recipes()->save($boxOrderRecipe);
+        }
+
+        return $this;
     }
 }

@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResources([
+    'suppliers' => 'API\SupplierController',
     'ingredients' => 'API\IngredientController',
     'recipes' => 'API\RecipeController',
 ]);

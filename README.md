@@ -187,7 +187,21 @@ $ php artisan test --filter testIngredientListing
 
 ## APIs
 
-### 1. Create an ingredient
+### 1. Create a supplier
+
+**Request:**
+
+```json
+POST /api/suppliers HTTP/1.1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "Fresh Foods"
+}
+```
+
+### 2. Create an ingredient
 
 **Request:**
 
@@ -206,7 +220,7 @@ Content-Type: application/json
 }
 ```
 
-### 2. List ingredients
+### 3. List ingredients
 
 **Request:**
 
@@ -218,7 +232,7 @@ Content-Type: application/json
 
 > This API is paginated using `page` query parameter.
 
-### 3. Create a recipe
+### 4. Create a recipe
 
 **Request:**
 
@@ -247,7 +261,7 @@ Content-Type: application/json
 }
 ```
 
-### 4. List recipes
+### 5. List recipes
 
 **Request:**
 
@@ -259,7 +273,7 @@ Content-Type: application/json
 
 > This API is paginated using `page` query parameter.
 
-### 5. Create a box for a user
+### 6. Create a box for a user
 
 **Request:**
 
@@ -282,7 +296,7 @@ Content-Type: application/json
 }
 ```
 
-### 6. View the ingredients required to be ordered by the company
+### 7. View the ingredients required to be ordered by the company
 
 **Request:**
 

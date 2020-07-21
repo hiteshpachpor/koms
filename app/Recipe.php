@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\RecipeIngredient;
 
 class Recipe extends Model
 {
@@ -54,5 +55,21 @@ class Recipe extends Model
             'id',
             'ingredient_id'
         );
+    }
+
+    /**
+     * Associate an ingredient to the recipe
+     *
+     * @param int $ingredient
+     * @param int $amount
+     * @return this
+     */
+    public function associateIngredient($ingredient, $amount)
+    {
+        $recipeIngredient = new RecipeIngredient();
+        $recipeIngredient->ingredient_id = $ingredient;
+        $recipeIngredient->amount = $amount;
+        $this->ingredientList()->save($recipeIngredient);
+        return $this;
     }
 }

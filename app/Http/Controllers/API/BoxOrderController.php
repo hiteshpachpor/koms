@@ -4,10 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Ingredient;
 use App\Recipe;
 use App\BoxOrder;
-use App\BoxOrderRecipe;
 use App\Http\Resources\BoxOrder as BoxOrderResource;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
@@ -118,23 +116,7 @@ class BoxOrderController extends Controller
 
         // Save the box's recipes
         foreach ($request->get('recipes') as $recipeId) {
-            $recipe = Recipe::with('ingredientList.ingredient')->find(
-                $recipeId
-            );
-            $ingredients = $recipe->ingredientList;
-
-            foreach ($ingredients as $ingredient) {
-                $boxOrderRecipe = new BoxOrderRecipe([
-                    'recipe_id' => $recipeId,
-                    'recipe_name' => $recipe->name,
-                    'ingredient_id' => $ingredient->ingredient->id,
-                    'ingredient_name' => $ingredient->ingredient->name,
-                    'ingredient_measure' => $ingredient->ingredient->measure,
-                    'ingredient_amount' => $ingredient->amount,
-                ]);
-
-                $boxOrder->recipes()->save($boxOrderRecipe);
-            }
+            $boxOrder->addRecipe($recipeId);
         }
 
         return $this->show($boxOrder->id);

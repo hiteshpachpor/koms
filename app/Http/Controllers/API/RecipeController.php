@@ -67,10 +67,10 @@ class RecipeController extends Controller
         // Save the recipe's ingredients
         if ($request->has('ingredients')) {
             foreach ($request->get('ingredients') as $ingredient) {
-                $recipeIngredient = new RecipeIngredient();
-                $recipeIngredient->ingredient_id = $ingredient['id'];
-                $recipeIngredient->amount = $ingredient['amount'];
-                $recipe->ingredientList()->save($recipeIngredient);
+                $recipe->associateIngredient(
+                    $ingredient['id'],
+                    $ingredient['amount']
+                );
             }
         }
 

@@ -61,6 +61,15 @@ class RecipeTest extends TestCase
         $this->assertDatabaseHas('recipe', [
             'name' => $recipe['name'],
         ]);
+
+        // Ingredients should be associated to the recipe
+        foreach ($ingredientsInRecipe as $ingredient) {
+            $this->assertDatabaseHas('recipe_ingredient', [
+                'recipe_id' => $responseJson['id'],
+                'ingredient_id' => $ingredient['id'],
+                'amount' => $ingredient['amount'],
+            ]);
+        }
     }
 
     /**

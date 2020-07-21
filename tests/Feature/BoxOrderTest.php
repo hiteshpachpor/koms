@@ -30,6 +30,9 @@ class BoxOrderTest extends TestCase
         // Create a few recipes
         $recipes = factory(Recipe::class, 4)->create();
 
+        // Keep a record of all recipe ingredient pairs
+        $recipeIngredients = [];
+
         foreach ($recipes as $recipe) {
             // Create a few ingredients
             $ingredients = factory(
@@ -42,11 +45,13 @@ class BoxOrderTest extends TestCase
 
             // Associate these ingredients to the recipe
             foreach ($ingredients as $ingredient) {
-                factory(RecipeIngredient::class)->create([
-                    'recipe_id' => $recipe->id,
-                    'ingredient_id' => $ingredient->id,
-                    'amount' => $faker->numberBetween($min = 1, $max = 5),
-                ]);
+                $recipeIngredients[] = factory(RecipeIngredient::class)->create(
+                    [
+                        'recipe_id' => $recipe->id,
+                        'ingredient_id' => $ingredient->id,
+                        'amount' => $faker->numberBetween($min = 1, $max = 5),
+                    ]
+                );
             }
         }
 
@@ -96,6 +101,16 @@ class BoxOrderTest extends TestCase
         $this->assertDatabaseHas('box_order', [
             'id' => $response['data']['id'],
         ]);
+
+        // Recipes should be associated to the box order
+        foreach ($recipeIngredients as $recipeIngredient) {
+            $this->assertDatabaseHas('box_order_recipe', [
+                'box_order_id' => $response['data']['id'],
+                'recipe_id' => $recipeIngredient->recipe_id,
+                'ingredient_id' => $recipeIngredient->ingredient_id,
+                'ingredient_amount' => $recipeIngredient->amount,
+            ]);
+        }
     }
 
     /**

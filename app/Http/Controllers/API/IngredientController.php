@@ -76,6 +76,35 @@ class IngredientController extends Controller
      */
     public function update(Request $request, Ingredient $ingredient)
     {
+        // Validate measure field
+        $measures = Config::get('constants.ingredient_measure');
+        $validator = Validator::make($request->all(), [
+            'measure' => [Rule::in($measures)],
+        ]);
+
+        if ($validator->fails()) {
+            $measuresString = implode(', ', $measures);
+            abort(
+                \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY,
+                "Measure is invalid. Permissible values are ${measuresString}."
+            );
+        }
+
+        // Check if the name is already taken
+        if (
+            $request->has('name') &&
+            Ingredient::where('id', '!=', $ingredient->id)
+                ->where('name', $request->get('name'))
+                ->exists()
+        ) {
+            abort(
+                \Illuminate\Http\Response::HTTP_UNPROCESSABLE_ENTITY,
+                "Another ingredient with the name '{$request->get(
+                    'name'
+                )}' already exists."
+            );
+        }
+
         $fields = [
             "name",
             "description",

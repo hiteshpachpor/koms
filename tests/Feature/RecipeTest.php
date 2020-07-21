@@ -64,17 +64,22 @@ class RecipeTest extends TestCase
     }
 
     /**
-     * Test API to list all recipes
+     * Test API to list recipes in paginated format
      *
      * @return void
      */
     public function testRecipeListing()
     {
+        $recipeCount = 25;
+        $recipesPerPage = 15;
+        $totalPagesExpected = (int) ceil($recipeCount / $recipesPerPage);
+        $currentPage = 1;
+
         // Create a Faker instance
         $faker = \Faker\Factory::create();
 
         // Create a few recipes
-        $recipes = factory(Recipe::class, 5)->create();
+        $recipes = factory(Recipe::class, $recipeCount)->create();
 
         foreach ($recipes as $recipe) {
             // Create a few ingredients
@@ -99,9 +104,24 @@ class RecipeTest extends TestCase
 
         $responseJson = $response->json();
 
-        // All recipes should be returned
-        $this->assertEquals(count($responseJson['data']), 5);
-        $this->assertEquals($responseJson['total'], 5);
+        // 15 recipes should be returned as per pagination
+        $this->assertEquals(count($responseJson['data']), $recipesPerPage);
+        $this->assertEquals($responseJson['total'], $recipeCount);
+
+        $response->assertJson([
+            'current_page' => $currentPage,
+            'data' => array_slice($recipes->toArray(), 0, $recipesPerPage),
+            'first_page_url' => "http://localhost/api/recipes?page={$currentPage}",
+            'from' => 1,
+            'last_page' => $totalPagesExpected,
+            'last_page_url' => "http://localhost/api/recipes?page={$totalPagesExpected}",
+            'next_page_url' => "http://localhost/api/recipes?page={$totalPagesExpected}",
+            'path' => 'http://localhost/api/recipes',
+            'per_page' => $recipesPerPage,
+            'prev_page_url' => null,
+            'to' => $recipesPerPage,
+            'total' => $recipeCount,
+        ]);
     }
 
     /**

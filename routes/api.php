@@ -27,7 +27,4 @@ Route::apiResources([
 Route::post('box/create', 'API\BoxOrderController@create');
 Route::get('box/{id}', 'API\BoxOrderController@show');
 
-Route::get(
-    'purchase-order/{order_date?}',
-    'API\InventoryController@purchaseOrder'
-);
+Route::get('purchase-order', 'API\InventoryController@purchaseOrder');

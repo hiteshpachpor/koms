@@ -15,8 +15,11 @@ class InventoryController extends Controller
      * @param  String|null  $orderDate
      * @return \Illuminate\Http\Response
      */
-    public function purchaseOrder($orderDate = null)
+    public function purchaseOrder(Request $request)
     {
-        return Inventory::purchaseOrder($orderDate);
+        $orderDate = $request->query('order_date', null);
+        $supplierId = $request->query('supplier_id', null);
+
+        return Inventory::purchaseOrder($supplierId, $orderDate);
     }
 }

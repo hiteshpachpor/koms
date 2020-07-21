@@ -46,11 +46,15 @@ class Inventory extends Model
      * Returns the list of ingredients to be purchased
      * to fulfil box orders for the specified date range
      *
+     * @param integer|null $supplierId
      * @param String|null $from
      * @param String|null $to
      */
-    public static function purchaseOrder($from = null, $to = null)
-    {
+    public static function purchaseOrder(
+        $supplierId = null,
+        $from = null,
+        $to = null
+    ) {
         if ($from) {
             $from = new \DateTimeImmutable($from);
         } else {
@@ -63,15 +67,31 @@ class Inventory extends Model
             $to = $from->add(new \DateInterval("P7D"));
         }
 
-        $data = DB::table('box_order')
-            ->join(
-                'box_order_recipe',
-                'box_order.id',
+        $data = DB::table('box_order')->join(
+            'box_order_recipe',
+            'box_order.id',
+            '=',
+            'box_order_recipe.box_order_id'
+        );
+
+        if ($supplierId) {
+            $data->join(
+                'ingredient',
+                'box_order_recipe.ingredient_id',
                 '=',
-                'box_order_recipe.box_order_id'
-            )
+                'ingredient.id'
+            );
+        }
+
+        $data
             ->where('box_order.delivery_date', '>=', $from->format('Y-m-d'))
-            ->where('box_order.delivery_date', '<=', $to->format('Y-m-d'))
+            ->where('box_order.delivery_date', '<=', $to->format('Y-m-d'));
+
+        if ($supplierId) {
+            $data->where('ingredient.supplier_id', $supplierId);
+        }
+
+        $data
             ->select(
                 'box_order_recipe.ingredient_id AS id',
                 DB::raw(
@@ -90,9 +110,8 @@ class Inventory extends Model
                     )
                 )
             )
-            ->groupBy('box_order_recipe.ingredient_id')
-            ->get();
+            ->groupBy('box_order_recipe.ingredient_id');
 
-        return $data;
+        return $data->get();
     }
 }

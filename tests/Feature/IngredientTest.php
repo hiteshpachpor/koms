@@ -46,14 +46,21 @@ class IngredientTest extends TestCase
     }
 
     /**
-     * Test API to list all ingredients
+     * Test API to list ingredients in paginated format
      *
      * @return void
      */
     public function testIngredientListing()
     {
+        $ingredientCount = 25;
+        $ingredientsPerPage = 15;
+        $totalPagesExpected = (int) ceil(
+            $ingredientCount / $ingredientsPerPage
+        );
+        $currentPage = 1;
+
         // Create a few ingredients
-        $ingredients = factory(Ingredient::class, 5)->create();
+        $ingredients = factory(Ingredient::class, $ingredientCount)->create();
 
         // Make api call to list all ingredients
         $response = $this->get('/api/ingredients');
@@ -61,9 +68,28 @@ class IngredientTest extends TestCase
 
         $responseJson = $response->json();
 
-        // All ingredients should be returned
-        $this->assertEquals(count($responseJson['data']), 5);
-        $this->assertEquals($responseJson['total'], 5);
+        // 15 ingredients should be returned as per pagination
+        $this->assertEquals(count($responseJson['data']), $ingredientsPerPage);
+        $this->assertEquals($responseJson['total'], $ingredientCount);
+
+        $response->assertJson([
+            'current_page' => $currentPage,
+            'data' => array_slice(
+                $ingredients->toArray(),
+                0,
+                $ingredientsPerPage
+            ),
+            'first_page_url' => "http://localhost/api/ingredients?page={$currentPage}",
+            'from' => 1,
+            'last_page' => $totalPagesExpected,
+            'last_page_url' => "http://localhost/api/ingredients?page={$totalPagesExpected}",
+            'next_page_url' => "http://localhost/api/ingredients?page={$totalPagesExpected}",
+            'path' => 'http://localhost/api/ingredients',
+            'per_page' => $ingredientsPerPage,
+            'prev_page_url' => null,
+            'to' => $ingredientsPerPage,
+            'total' => $ingredientCount,
+        ]);
 
         // To debug:
         // fwrite(STDERR, print_r("...", true));

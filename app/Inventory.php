@@ -22,14 +22,13 @@ class Inventory extends Model
      * This method helps overcome this problem by identifying the database type
      * and returns a compatible string for the current database.
      *
+     * @param String $database
      * @param String $field
      * @param String $alias
      * @return String
      */
-    public static function databaseSpecificFieldCast($field, $alias)
+    public static function databaseSpecificFieldCast($database, $field, $alias)
     {
-        $database = Config('database.default');
-
         switch ($database) {
             case 'sqlite':
                 return "{$field} AS {$alias}";
@@ -91,11 +90,14 @@ class Inventory extends Model
             $data->where('ingredient.supplier_id', $supplierId);
         }
 
+        $database = Config('database.default');
+
         $data
             ->select(
                 'box_order_recipe.ingredient_id AS id',
                 DB::raw(
                     self::databaseSpecificFieldCast(
+                        $database,
                         'box_order_recipe.ingredient_name',
                         'ingredient'
                     )
@@ -105,6 +107,7 @@ class Inventory extends Model
                 ),
                 DB::raw(
                     self::databaseSpecificFieldCast(
+                        $database,
                         'box_order_recipe.ingredient_measure',
                         'measure'
                     )

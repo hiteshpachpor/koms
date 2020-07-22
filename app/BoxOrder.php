@@ -59,6 +59,7 @@ class BoxOrder extends Model
      *
      * @param String $date
      * @param String $slot
+     * @return bool
      */
     public static function isDeliveryDateSlotValid($date = null, $slot = null)
     {
